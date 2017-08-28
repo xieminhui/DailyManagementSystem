@@ -130,5 +130,8 @@ module.exports = function(app) {
     app.post('/manageAccount', function(req, res) {
         AdminCtrl.manageAccount(req, res);
     });
-
+    //获取图表数据
+    app.post("/echartsData", function (req, res) {
+        AdminCtrl.getEchartData(req, res);
+    })
 }

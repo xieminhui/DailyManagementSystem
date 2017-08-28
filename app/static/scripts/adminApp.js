@@ -2,7 +2,8 @@
 
 //管理系统模块，admin。声明依赖
 var adminApp = angular.module('adminApp', ['ngAnimate','ngTouch','ui.router','ui.grid', 'ui.grid.selection',
-     'ui.grid.edit','ui.grid.cellNav', 'ui.grid.pagination']);
+     'ui.grid.edit','ui.grid.cellNav', 'ui.grid.pagination', 'ui.grid.resizeColumns', 'ui.grid.moveColumns',
+]);
 
 /**
  * 由于整个应用都会和路由打交道，所以这里把$state和$stateParams这两个对象放到$rootScope上，方便其它地方引用和注入。
@@ -60,6 +61,12 @@ adminApp.config(function($stateProvider, $urlRouterProvider) { //设置路由
             url: '/seeAllSpend',
             templateUrl: '/tpl/seeAllSpend.html',
             controller: 'seeAllSpend'
+        })
+        //图表echarts
+        .state('admin.echarts', {
+            url: '/echarts',
+            templateUrl: '/tpl/echarts.html',
+            controller: 'echarts'
         })
         //添加管理员
         .state('admin.addAdmin',{

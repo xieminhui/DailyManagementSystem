@@ -26,6 +26,9 @@ adminApp.controller('navCtrl', ['$scope', '$http', '$location',
             navName: '管理全部消费',
             urlName: 'seeAllSpend'
         }, {
+            navName: '统计分析',
+            urlName: 'echarts'
+        }, {
             navName: '添加管理员',
             urlName: 'addAdmin'
         }, {
@@ -307,6 +310,7 @@ adminApp.controller('seeAllSpend', ['$scope', '$http','$filter',
 
         $scope.gridOptions = {
             data: 'spend',
+            enableColumnResizing: true,
             // rowTemplate: '<div style="height: 100%"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
             //     '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
             //     '<div ng-cell></div>' +
@@ -363,19 +367,19 @@ adminApp.controller('seeAllSpend', ['$scope', '$http','$filter',
                 field: 'Current_num',
                 displayName: '购买数量',
                 enableCellEdit: true,
-                width: '5%'
+                width: '10%'
             }, {
                 field: 'Brief',
                 displayName: '简介',
                 enableCellEdit: true,
-                width: '20%'
+                width: '25%'
             }, {
                 field: 'id',
                 displayName: '修改',
                 enableCellEdit: false,
                 sortable: false,
                 pinnable: false,
-                width: '10%',
+                width: '5%',
                 // width: 120,
                 cellTemplate: '<div><a class="btn btn-xs btn-success feng-btn-modify" ng-click="grid.appScope.updateSpend(row)"  data="{{grid.getCellValue(row,col)}}">确认修改</a></div>'
             }, {
@@ -385,7 +389,7 @@ adminApp.controller('seeAllSpend', ['$scope', '$http','$filter',
                 sortable: false,
                 pinnable: false,
                 // width: 120,
-                width: '10%',
+                width: '5%',
                 cellTemplate: '<div><a class="btn btn-xs btn-danger feng-btn-delete" ng-click="grid.appScope.deleteSpend(row)" data="{{grid.getCellValue(row,col)}}">删除</a></div>'
                     //ng-click时间触发的时候传入row
              }],
@@ -426,6 +430,49 @@ adminApp.controller('seeAllSpend', ['$scope', '$http','$filter',
         };
     }
 ]);
+
+//echarts图表部分
+adminApp.controller("echarts", ['$scope', '$http',
+function ($scope, $http) {
+    $scope.exchartsData = ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"];
+
+}]).directive('myecharts', function () {
+    return {
+        restrict : 'AE',
+        //   template : '<div>这是柱图</div>',
+        replace  : true,
+        scope : {
+            data : data
+        },
+        link     : function ($scope, $element, attr) {
+            var chart = angular.element('.myecharts');
+            chart.css({
+                'width' : '600',
+                'height' : '400'
+            });
+            var myChart = echarts.init(chart[0]);//不用使用类似jquery对象的angular elemment 对象
+            var options = {
+                title: {
+                    text: 'ECharts 入门示例'
+                },
+                tooltip: {},
+                legend: {
+                    data:['销量']
+                },
+                xAxis: {
+                    data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+                },
+                yAxis: {},
+                series: [{
+                    name: '销量',
+                    type: 'bar',
+                    data: [5, 20, 36, 10, 10, 20]
+                }]
+            };
+            myChart.setOption(options);
+        }
+    }
+})
 
 //添加管理员
 adminApp.controller('addAdmin', ['$scope', '$http',
