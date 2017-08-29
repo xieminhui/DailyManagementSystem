@@ -148,11 +148,10 @@ exports.selectAll = selectAll;
 
 //选择echarts数据
 var selectEchartsData = function (obj, callback) {
-    var sql = "select t_spend.Sort_id,t_type.Sort_name,sum(t_spend.Price)" +
+    var sql = "select t_spend.Sort_id,t_type.Sort_name,sum(t_spend.Price) as 'sum'" +
         " from t_type inner  join t_spend " +
         "  on  t_type.Sort_id = t_spend.Sort_id" +
-        " and t_spend.purchaser = "+obj.purchaser+
-        " and purchaserDate between "+obj.beginTime+" and" +obj.endTime+
+        " and t_spend.purchaser = '"+obj.purchaser+"'and purchaserDate between '"+obj.beginTime+"' and'" +obj.endTime+"'" +
         " group BY t_spend.Sort_id";
     try {
         //执行插入语句，成功返回success
@@ -160,14 +159,15 @@ var selectEchartsData = function (obj, callback) {
             console.log("EchartsDataSelectAllSuccess:" + rows);
             if (err) {
                 console.error("EchartsDataSelectAllError:" + err);
+
             }
-            callback(rows);
+            callback('sucess',rows);
         });
     } catch (er) {
         //错误则输出异常并输出错误
         console.error("EchartsDataSelectAllCatchError:" + er);
-        callback(er);
+        callback('error');
     }
-}
+};
 
 exports.selectEchartsData = selectEchartsData;

@@ -191,7 +191,28 @@ exports.getEchartData = function (req, res) {
         beginTime : req.body.beginTime,
         endTime   : req.body.endTime
     };
-    SpendDao.selectEchartsData(obj, function () {
+    SpendDao.selectEchartsData(obj, function (msg,row) {
+        if (msg == 'error') {
+            res.json({
+                success: '获取数据失败!',
 
+            });
+        }
+        var data = {
+            "xAxis"  : [],
+            "series" : []
+        };
+      //  var a = new Array;
+      //  var b = new Array;
+        for(var i=0;i<row.length;i++){
+         //   a[i] = row[i].Sort_name;
+        //    b[i] = row[i].sum;
+            data.xAxis[i] = row[i].Sort_name;
+            data.series[i] = row[i].sum;
+        }
+        res.status(200).json({
+            row    : data,
+            success: '获取数据成功!'
+        });
     });
 }

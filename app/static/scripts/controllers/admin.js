@@ -191,7 +191,7 @@ adminApp.controller('addSpending', ['$scope', '$http','$filter',
             });
 
         //提交的时候
-        $scope.addBook = function(valid, event) {
+        $scope.addspend = function(valid, event) {
             $scope.formData = {
                 //bookName: $scope.bookName,
                 purchaser: $scope.purchaser,
@@ -432,47 +432,103 @@ adminApp.controller('seeAllSpend', ['$scope', '$http','$filter',
 ]);
 
 //echarts图表部分
-adminApp.controller("echarts", ['$scope', '$http',
-function ($scope, $http) {
-    $scope.exchartsData = ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"];
+adminApp.controller("echarts", ['$scope', '$http','$filter',
+function ($scope, $http,$filter) {
+ //   $scope.data = data;
 
-}]).directive('myecharts', function () {
-    return {
-        restrict : 'AE',
-        //   template : '<div>这是柱图</div>',
-        replace  : true,
-        scope : {
-            data : data
-        },
-        link     : function ($scope, $element, attr) {
-            var chart = angular.element('.myecharts');
-            chart.css({
-                'width' : '600',
-                'height' : '400'
-            });
-            var myChart = echarts.init(chart[0]);//不用使用类似jquery对象的angular elemment 对象
-            var options = {
-                title: {
-                    text: 'ECharts 入门示例'
-                },
-                tooltip: {},
-                legend: {
-                    data:['销量']
-                },
-                xAxis: {
-                    data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-                },
-                yAxis: {},
-                series: [{
-                    name: '销量',
-                    type: 'bar',
-                    data: [5, 20, 36, 10, 10, 20]
-                }]
-            };
-            myChart.setOption(options);
-        }
+    $scope.getData = function () {
+        $scope.postData = {
+            beginTime : $filter('date')($scope.startTime, 'yyyy-MM-dd'),
+            endTime   : $filter('date')($scope.stopTime, 'yyyy-MM-dd')
+        };
+        $http({
+            method : 'post',
+            url    : '/echartsData',
+            headers: {
+                //表单的报头格式
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data   : $.param($scope.postData)
+        }).then(function (res) {
+            $scope.data =  res.data;
+           $scope.initEcharts($scope.data);
+        //    angular.element('.myecharts').attr('myecharts','');
+
+         //   $scope.$apply();
+        });
+    };
+    $scope.initEcharts = function (data) {
+        var chart = angular.element('.myecharts');
+        chart.css({
+            'width' : '600',
+            'height' : '400'
+        });
+        var myChart = echarts.init(chart[0]);//不用使用类似jquery对象的angular elemment 对象
+        var options = {
+            title: {
+                text: '消费柱状图'
+            },
+            tooltip: {},
+            legend: {
+                data:['销量']
+            },
+            xAxis: {
+                data  : $scope.data.row.xAxis
+                //data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            },
+            yAxis: {},
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data : $scope.data.row.series
+                //   data: [5, 20, 36, 10, 10, 20]
+            }]
+        };
+        myChart.setOption(options);
     }
-})
+
+
+}])
+    // .directive('myecharts', function () {
+    // return {
+    //     restrict : 'AE',
+    //     //   template : '<div>这是柱图</div>',
+    //     replace  : true,
+    //     scope : {
+    //         data : '@'
+    //     },
+    //     link     : function ($scope, $element, attr) {
+    //         var chart = angular.element('.myecharts');
+    //         chart.css({
+    //             'width' : '600',
+    //             'height' : '400'
+    //         });
+    //         var myChart = echarts.init(chart[0]);//不用使用类似jquery对象的angular elemment 对象
+    //         var options = {
+    //             title: {
+    //                 text: 'ECharts 入门示例'
+    //             },
+    //             tooltip: {},
+    //             legend: {
+    //                 data:['销量']
+    //             },
+    //             xAxis: {
+    //                 data  : $scope.data.row.xAxis
+    //                 //data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+    //             },
+    //             yAxis: {},
+    //             series: [{
+    //                 name: '销量',
+    //                 type: 'bar',
+    //                 data : $scope.data.row.series
+    //              //   data: [5, 20, 36, 10, 10, 20]
+    //             }]
+    //         };
+    //         myChart.setOption(options);
+    //
+    //     }
+    // }
+//})
 
 //添加管理员
 adminApp.controller('addAdmin', ['$scope', '$http',
@@ -537,7 +593,7 @@ adminApp.controller('manageAccount', ['$scope', '$http',
                         //表单的报头格式
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    data: $.param($scope.formData) //发送user数据到后台，这里用到了jQ
+                    data:$.param($scope.formData) //发送user数据到后台，这里用到了jQ
                 }).then(function successCallback(response) {
                     if (response.status === 200) {
                         for (var p in $scope.formData) {
