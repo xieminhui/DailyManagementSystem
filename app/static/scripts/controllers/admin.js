@@ -452,11 +452,58 @@ function ($scope, $http,$filter) {
         }).then(function (res) {
             $scope.data =  res.data;
            $scope.initEcharts($scope.data);
+           $scope.initpie($scope.data);
         //    angular.element('.myecharts').attr('myecharts','');
 
          //   $scope.$apply();
         });
     };
+    $scope.initpie = function (data) {
+        var data = [];
+        for(var i=0;i<$scope.data.row.xAxis.length;i++){
+            data.push({
+                'name' : $scope.data.row.xAxis[i],
+                'value': $scope.data.row.series[i]
+            });
+        }
+        var chart = angular.element('#pie');
+        chart.css({
+            'width' : '600',
+            'height' : '400'
+        });
+        var myChart = echarts.init(chart[0]);//不用使用类似jquery对象的angular elemment 对象
+        var options = {
+            title: {
+                text : '支出比例图',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vectical',
+                left: 'left',
+                data: $scope.data.row.xAxis
+            },
+            series: {
+                name : '消费类型',
+                type : 'pie',
+                radius : '55%',
+                center : ['50%','60%'],
+                data : data,
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        };
+        myChart.setOption(options);
+    };
+
     $scope.initEcharts = function (data) {
         var chart = angular.element('.myecharts');
         chart.css({
@@ -468,9 +515,11 @@ function ($scope, $http,$filter) {
             title: {
                 text: '消费柱状图'
             },
-            tooltip: {},
+            tooltip: {
+                tirgger : 'axis'
+            },
             legend: {
-                data:['销量']
+                data:['支出']
             },
             xAxis: {
                 data  : $scope.data.row.xAxis
@@ -478,7 +527,14 @@ function ($scope, $http,$filter) {
             },
             yAxis: {},
             series: [{
-                name: '销量',
+                // itemStyle : {
+                //     normal: {
+                //         label : {
+                //             show: true
+                //         }
+                //     }
+                // },
+                name: '支出',
                 type: 'bar',
                 data : $scope.data.row.series
                 //   data: [5, 20, 36, 10, 10, 20]
